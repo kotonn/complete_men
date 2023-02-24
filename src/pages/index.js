@@ -37,5 +37,4 @@ const Home = () => {
     </Box>
   )
 }
-
-export default Home
+export default MapContainer;

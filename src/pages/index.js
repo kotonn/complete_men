@@ -1,22 +1,38 @@
-import { Button } from '@mui/material';
 import React from 'react';
-import { GoogleMap, LoadScript } from '@react-google-maps/api';
+import { useState, useEffect } from 'react';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+
 const MapContainer = () => {
-  const mapStyles = {        
+  const [position, setPosition] = useState({ lat: 0, lng: 0 });
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setPosition({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      () => null
+    );
+  }, []);
+
+  const mapStyles = {
     height: "100vh",
-    width: "100%"};
-  const defaultCenter = {
-    lat: 41.3851, lng: 2.1734
-  }
+    width: "100%"
+  };
+
   return (
-     <LoadScript
-       googleMapsApiKey='AIzaSyARf2O8_kiPOjmWzrP_ZcqAdjbaT-K4uSw'>
-        <GoogleMap
-          mapContainerStyle={mapStyles}
-          zoom={13}
-          center={defaultCenter}
-        />
-     </LoadScript>
+    <LoadScript
+      googleMapsApiKey='AIzaSyARf2O8_kiPOjmWzrP_ZcqAdjbaT-K4uSw'>
+      <GoogleMap
+        mapContainerStyle={mapStyles}
+        zoom={13}
+        center={position}
+      >
+        <Marker position={position} />
+      </GoogleMap>
+    </LoadScript>
   )
 }
 export default MapContainer;

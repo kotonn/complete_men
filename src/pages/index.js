@@ -8,9 +8,10 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import DirectionsIcon from '@mui/icons-material/Directions';
+import { CollectionsBookmarkRounded } from '@mui/icons-material';
 
 const MapContainer = () => {
-  const [position, setPosition] = useState({ lat: 0, lng: 0 });
+  const [position, setPosition] = useState({ lat:12,lng:12});
 
   // how to define the type of markers
   const [markers, setMarkers] = useState([
@@ -42,6 +43,9 @@ const MapContainer = () => {
 
   const onPlacesChanged = () => {
     const places = serachBoxRef.current.getPlaces();
+   if(places == undefined){
+    ;
+   }else{
     const newMarkers = places.map((place) => ({
       lat: place.geometry.location.lat(),
       lng: place.geometry.location.lng(),
@@ -52,7 +56,7 @@ const MapContainer = () => {
     const lng = serachBoxRef.current.getPlaces()[0].geometry.location.lng();
     setPosition({ lat, lng })
   };
-
+  }
   // do not reload the page when an user click the enter key
   // const handleSubmit = (e) => {
   //   e.preventDefault();
@@ -71,7 +75,7 @@ const MapContainer = () => {
         // onsubmit={handleSubmit}
         >
           <Paper
-            component="form"
+            component="text"
             sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400, marginRight: 'auto', marginLeft: 'auto' }}
           >
             <InputBase

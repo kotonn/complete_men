@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { CircleF, GoogleMap, InfoWindowF, LoadScript, MarkerF, StandaloneSearchBox } from '@react-google-maps/api';
-import { Box, radioClasses } from '@mui/material';
+import { Box, radioClasses,DataGrid } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
@@ -157,11 +157,11 @@ console.log(markers)
           </Paper>
         </StandaloneSearchBox>
         <Box sx={{ display: 'flex', marginLeft: "30px", marginTop: 5 }}>
-          <GoogleMap directionService mapContainerStyle={mapStyles} zoom={13} center={position}>
+          <GoogleMap directionService mapContainerStyle={mapStyles} zoom={15} center={position}>
             {/* set the first marker on the position where an user is. */}
-            <MarkerF position={position} />
+            <MarkerF position={position} icon={"https://maps.google.com/mapfiles/kml/paddle/blu-blank.png"} />
             {/* set the markers on the places where an user searched. */}
-            {markers.map((marker) => (
+            {namerating.filter((v,index) => index < 10).map((marker) => (
               <MarkerF key={marker.lat} position={marker} onClick={moveToThere}
               />
               ))}
@@ -175,14 +175,18 @@ console.log(markers)
            
           </GoogleMap>
           <Box>
-            {namerating.map((rating) => (
-              <div sx={{ flexDirection: "column",  }} onMouseEnter={()=>{
+          <h1 >おすすめのスポット</h1>
+          <Box fontSize={20} fontWeight={400} color={"pink"} ml={4} sx={{ height: '20%' }}>
+            {namerating.filter((v,index) => index < 10).map((rating,idx) => (
+              <Box bgcolor={"white"} mb={1} borderRadius={2} boxShadow={2} p={1}>
+              <div  sx={{ flexDirection: "column", }} onMouseEnter={()=>{
                 let ratingcenter ={lat:rating.lat,lng:rating.lng}
                 console.log(ratingcenter);
                 setRecocenter({lat:ratingcenter.lat,lng:ratingcenter.lng})
                 setReconame(rating.storename)
               }} >
-                {rating.storename } {rating.rating}</div>))}
+    {rating.storename }　　　評価： {rating.rating}
+               </div></Box>))}</Box>
                 
           </Box></Box>
       </Box>

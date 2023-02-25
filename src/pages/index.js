@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { GoogleMap, InfoWindowF, LoadScript, MarkerF, StandaloneSearchBox } from '@react-google-maps/api';
-import { Box } from '@mui/material';
+import { CircleF, GoogleMap, InfoWindowF, LoadScript, MarkerF, StandaloneSearchBox } from '@react-google-maps/api';
+import { Box, radioClasses, DataGrid } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
@@ -153,34 +153,26 @@ const MapContainer = () => {
             onPlacesChanged={onPlacesChanged}
             options={{ visible: false }}
           >
-            <Paper
-              component='text'
-              sx={{
-                p: '2px 4px',
-                display: 'flex',
-                alignItems: 'center',
-                width: 400,
-              }}
-            >
-              <InputBase
-                sx={{ ml: 1, flex: 1 }}
-                placeholder='検索'
-                inputProps={{ 'aria-label': 'search google maps' }}
-              />
-              <IconButton type='button' sx={{ p: '10px' }} aria-label='search'>
-                <SearchIcon />
-              </IconButton>
-              <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-              <img id="imgPosition" src="/mapcat.png" style={{ width: '30px', paddingBottom: '10px', cursor: "pointer" }} onClick={() => { fetchGPT3("カフェの後に行きたくなる場所を5個javascriptの配列で教えて") }} />
-            </Paper>
-          </StandaloneSearchBox>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 5 }}>
-          <GoogleMap directionService mapContainerStyle={mapStyles} zoom={13} center={position}>
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder='Search Google Maps'
+              inputProps={{ 'aria-label': 'search google maps' }}
+            />
+            <IconButton type='button' sx={{ p: '10px' }} aria-label='search'>
+              <SearchIcon />
+            </IconButton>
+
+            <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+            <img src="/mapcat.png" style={{ width: '30px', paddingBottom: '10px' }} />
+
+          </Paper>
+        </StandaloneSearchBox>
+        <Box sx={{ display: 'flex', marginLeft: "30px", marginTop: 5 }}>
+          <GoogleMap directionService mapContainerStyle={mapStyles} zoom={15} center={position}>
             {/* set the first marker on the position where an user is. */}
-            <MarkerF position={position} />
+            <MarkerF position={position} icon={"https://maps.google.com/mapfiles/kml/paddle/blu-blank.png"} />
             {/* set the markers on the places where an user searched. */}
-            {markers.map((marker) => (
+            {namerating.filter((v, index) => index < 10).map((marker) => (
               <MarkerF key={marker.lat} position={marker} onClick={moveToThere}
               />
             ))}
@@ -191,17 +183,20 @@ const MapContainer = () => {
             </InfoWindowF>
           </GoogleMap>
           <Box>
-            {namerating.map((rating) => (
-              <div key={rating} sx={{ flexDirection: "column" }} onMouseEnter={() => {
-                let ratingcenter = { lat: rating.lat, lng: rating.lng }
-                setRecocenter({ lat: ratingcenter.lat, lng: ratingcenter.lng })
-                setReconame(rating.storename)
-              }}>
-                {rating.storename} {rating.rating}
-              </div>
-            ))}
-          </Box>
-        </Box>
+            <h1 >おすすめのスポット</h1>
+            <Box fontSize={20} fontWeight={400} color={"pink"} ml={4} sx={{ height: '20%' }}>
+              {namerating.filter((v, index) => index < 10).map((rating, idx) => (
+                <Box bgcolor={"white"} mb={1} borderRadius={2} boxShadow={2} p={1}>
+                  <div sx={{ flexDirection: "column", }} onMouseEnter={() => {
+                    let ratingcenter = { lat: rating.lat, lng: rating.lng }
+                    console.log(ratingcenter);
+                    setRecocenter({ lat: ratingcenter.lat, lng: ratingcenter.lng })
+                    setReconame(rating.storename)
+                  }} >
+                    {rating.storename}　　　評価： {rating.rating}
+                  </div></Box>))}</Box>
+
+          </Box></Box>
       </Box>
     </LoadScript >
   );

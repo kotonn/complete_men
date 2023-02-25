@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, MarkerF, StandaloneSearchBox } from '@react-google-maps/api';
-import { Box } from '@mui/material';
+import { CircleF, GoogleMap, InfoWindowF, LoadScript, MarkerF, StandaloneSearchBox } from '@react-google-maps/api';
+import { Box, radioClasses } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
@@ -47,6 +47,8 @@ const MapContainer = () => {
     );
   }, [currentPositionName]);
 
+  const [recocenter,setRecocenter] = useState({lat:0,lng:0,name:""});
+  const[reconame,setReconame] = useState("")
 
   const mapStyles = {
     height: '80vh',
@@ -54,7 +56,7 @@ const MapContainer = () => {
   };
 
   const serachBoxRef = useRef();
-  const [namerating, setNamerating] = useState([{ storename: 'ななし', rating: 0 }]);
+  const [namerating, setNamerating] = useState([{ storename: '', rating: "" ,lat:0,lng:0}]);
   const onPlacesChanged = () => {
     const places = serachBoxRef.current.getPlaces();
     if (places == undefined) {
@@ -69,6 +71,8 @@ const MapContainer = () => {
       const newNamerating = places.map((place) => ({
         storename: place.name,
         rating: place.rating,
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
       }));
 
       setNamerating(newNamerating);
@@ -87,9 +91,10 @@ const MapContainer = () => {
       const lat = places[0].geometry.location.lat();
       const lng = places[0].geometry.location.lng();
       setPosition({ lat, lng });
+     
     };
   }
-
+console.log(markers)
   const moveToThere = (e) => {
     // get the name of the position where an user clicked
     const geocoder = new window.google.maps.Geocoder();
@@ -159,12 +164,26 @@ const MapContainer = () => {
             {markers.map((marker) => (
               <MarkerF key={marker.lat} position={marker} onClick={moveToThere}
               />
-            ))}
+              ))}
+              
+              <InfoWindowF position={recocenter}>
+          <div>
+            <p>{reconame}</p>
+          </div>
+        </InfoWindowF>
+              
+           
           </GoogleMap>
           <Box>
             {namerating.map((rating) => (
-              <li sx={{ flexDirection: "column" }} key={rating} >
-                {rating.storename} {rating.rating}</li>))}
+              <div sx={{ flexDirection: "column",  }} onMouseEnter={()=>{
+                let ratingcenter ={lat:rating.lat,lng:rating.lng}
+                console.log(ratingcenter);
+                setRecocenter({lat:ratingcenter.lat,lng:ratingcenter.lng})
+                setReconame(rating.storename)
+              }} >
+                {rating.storename } {rating.rating}</div>))}
+                
           </Box></Box>
       </Box>
     </LoadScript>

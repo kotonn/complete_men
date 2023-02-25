@@ -47,8 +47,8 @@ const MapContainer = () => {
     );
   }, [currentPositionName]);
 
-  const [recocenter,setRecocenter] = useState({lat:0,lng:0,name:""});
-  const[reconame,setReconame] = useState("")
+  const [recocenter, setRecocenter] = useState({ lat: 0, lng: 0, name: "" });
+  const [reconame, setReconame] = useState("")
 
   const mapStyles = {
     height: '80vh',
@@ -56,7 +56,8 @@ const MapContainer = () => {
   };
 
   const serachBoxRef = useRef();
-  const [namerating, setNamerating] = useState([{ storename: '', rating: "" ,lat:0,lng:0}]);
+  const [namerating, setNamerating] = useState([{ storename: '', rating: "", lat: 0, lng: 0 }]);
+
   const onPlacesChanged = () => {
     const places = serachBoxRef.current.getPlaces();
     if (places == undefined) {
@@ -91,10 +92,10 @@ const MapContainer = () => {
       const lat = places[0].geometry.location.lat();
       const lng = places[0].geometry.location.lng();
       setPosition({ lat, lng });
-     
     };
   }
-console.log(markers)
+  console.log(markers)
+
   const moveToThere = (e) => {
     // get the name of the position where an user clicked
     const geocoder = new window.google.maps.Geocoder();
@@ -164,15 +165,12 @@ console.log(markers)
             {namerating.filter((v,index) => index < 10).map((marker) => (
               <MarkerF key={marker.lat} position={marker} onClick={moveToThere}
               />
-              ))}
-              
-              <InfoWindowF position={recocenter}>
-          <div>
-            <p>{reconame}</p>
-          </div>
-        </InfoWindowF>
-              
-           
+            ))}
+            <InfoWindowF position={recocenter}>
+              <div>
+                <p>{reconame}</p>
+              </div>
+            </InfoWindowF>
           </GoogleMap>
           <Box>
           <h1 >おすすめのスポット</h1>
@@ -182,7 +180,7 @@ console.log(markers)
               <div  sx={{ flexDirection: "column", }} onMouseEnter={()=>{
                 let ratingcenter ={lat:rating.lat,lng:rating.lng}
                 console.log(ratingcenter);
-                setRecocenter({lat:ratingcenter.lat,lng:ratingcenter.lng})
+                setRecocenter({ lat: ratingcenter.lat, lng: ratingcenter.lng })
                 setReconame(rating.storename)
               }} >
     {rating.storename }　　　評価： {rating.rating}
@@ -195,6 +193,5 @@ console.log(markers)
   );
 };
 export default MapContainer;
-
 
 

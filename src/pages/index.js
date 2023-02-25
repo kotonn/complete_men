@@ -12,6 +12,28 @@ const MapContainer = () => {
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
   const [currentPositionName, setCurrentPositionName] = useState('');
   const [destinationPositionName, setDestinationPositionName] = useState('');
+  const [namerating, setNamerating] = useState([{ storename: 'ななし', rating: 0 }]);
+  const [GPT3Response, setGPT3Response] = useState('');
+  const chatGptApiKey = "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";
+
+  // fetch the data from the openAI and set the data to the state
+  const fetchGPT3 = async (text) => {
+    const response = await fetch("https://api.openai.com/v1/engines/text-davinci-003/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${chatGptApiKey}`,
+      },
+      body: JSON.stringify({
+        prompt: text,
+        n: 1,
+        max_tokens: 4000,
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+    setGPT3Response(data.choices[0].text);
+  };
 
   // how to define the type of markers
   const [markers, setMarkers] = useState([
@@ -54,7 +76,7 @@ const MapContainer = () => {
   };
 
   const serachBoxRef = useRef();
-  const [namerating, setNamerating] = useState([{ storename: 'ななし', rating: 0 }]);
+
   const onPlacesChanged = () => {
     const places = serachBoxRef.current.getPlaces();
     if (places == undefined) {
@@ -134,7 +156,7 @@ const MapContainer = () => {
               display: 'flex',
               alignItems: 'center',
               width: 400,
-              marginLeft: "50px"
+              marginLeft: "20%",
             }}
           >
             <InputBase
@@ -142,13 +164,12 @@ const MapContainer = () => {
               placeholder='Search Google Maps'
               inputProps={{ 'aria-label': 'search google maps' }}
             />
-            <IconButton type='button' sx={{ p: '10px' }} aria-label='search'>
+            <IconButton type='button' sx={{ p: '10px' }} aria-label='search' onClick={() => { fetchGPT3("新宿に遊びに来たらどこに行くのがおすすめですか？") }}>
               <SearchIcon />
             </IconButton>
 
             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
             <img src="/mapcat.png" style={{ width: '30px', paddingBottom: '10px' }} />
-
           </Paper>
         </StandaloneSearchBox>
         <Box sx={{ display: 'flex', marginLeft: "30px", marginTop: 5 }}>
@@ -168,10 +189,6 @@ const MapContainer = () => {
           </Box></Box>
       </Box>
     </LoadScript>
-
   );
 };
 export default MapContainer;
-
-
-

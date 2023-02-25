@@ -7,10 +7,11 @@ import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import DirectionsIcon from '@mui/icons-material/Directions';
 
 const MapContainer = () => {
-  const [position, setPosition] = useState({ lat:0,lng:0});
+  const [position, setPosition] = useState({ lat: 0, lng: 0 });
+  const [currentPositionName, setCurrentPositionName] = useState('');
+  const [destinationPositionName, setDestinationPositionName] = useState('');
 
   // how to define the type of markers
   const [markers, setMarkers] = useState([
@@ -27,11 +28,25 @@ const MapContainer = () => {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
+        // show the name of the current position 
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: { lat: position.coords.latitude, lng: position.coords.longitude } }, (results, status) => {
+          if (status === "OK") {
+            if (results[0]) {
+              setCurrentPositionName(results[0].formatted_address);
+            } else {
+              window.alert("");
+            }
+          } else {
+            window.alert("Geocoder failed due to: " + status);
+          }
+        }
+        );
       },
       () => null
     );
 
-  }, []);
+  }, [currentPositionName]);
 
   const mapStyles = {
     height: "80vh",
@@ -42,26 +57,40 @@ const MapContainer = () => {
 
   const onPlacesChanged = () => {
     const places = serachBoxRef.current.getPlaces();
-   if(places == undefined){
-    ;
-   }else{
-    const newMarkers = places.map((place) => ({
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-    }));
-    setMarkers(newMarkers);
-    console.log(newMarkers)
-    // get the center of the place
-    const lat = serachBoxRef.current.getPlaces()[0].geometry.location.lat();
-    const lng = serachBoxRef.current.getPlaces()[0].geometry.location.lng();
-    setPosition({ lat, lng })
-  };
+    if (places == undefined) {
+      ;
+    } else {
+      const newMarkers = places.map((place) => ({
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      }));
+      setMarkers(newMarkers);
+      // get the center of the place
+      const lat = serachBoxRef.current.getPlaces()[0].geometry.location.lat();
+      const lng = serachBoxRef.current.getPlaces()[0].geometry.location.lng();
+      setPosition({ lat, lng })
+    };
   }
-  // do not reload the page when an user click the enter key
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  // }
-  
+
+  const moveToThere = (e) => {
+    // get the name of the position where an user clicked
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ location: { lat: e.latLng.lat(), lng: e.latLng.lng() } }, (results, status) => {
+      if (status === "OK") {
+        if (results[0]) {
+          setDestinationPositionName(results[0].formatted_address);
+        } else {
+          window.alert("");
+        }
+      } else {
+        window.alert("Geocoder failed due to: " + status);
+      }
+    }
+    );
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${currentPositionName}&destination=${destinationPositionName}`;
+    window.open(url, '_blank');
+  }
+
 
   return (
     <LoadScript
@@ -73,7 +102,6 @@ const MapContainer = () => {
           onLoad={ref => serachBoxRef.current = ref}
           onPlacesChanged={onPlacesChanged}
           options={{ visible: false }}
-        // onsubmit={handleSubmit}
         >
           <Paper
             component="text"
@@ -88,7 +116,7 @@ const MapContainer = () => {
               <SearchIcon />
             </IconButton>
             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-            <img src="/mapcat.png" style={{width: '30px', paddingBottom: '10px'}}/>
+            <img src="/mapcat.png" style={{ width: '30px', paddingBottom: '10px' }} />
           </Paper>
         </StandaloneSearchBox>
         <Box sx={{ display: "flex", justifyContent: "center", marginTop: 5 }}>
@@ -101,7 +129,8 @@ const MapContainer = () => {
             <MarkerF position={position} />
             {/* set the markers on the places where an user searched. */}
             {markers.map((marker) => (
-              <MarkerF key={marker.lat} position={marker} />
+              <MarkerF key={marker.lat} position={marker} onClick={moveToThere}
+              />
             ))}
           </GoogleMap>
         </Box>

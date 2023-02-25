@@ -8,10 +8,9 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import DirectionsIcon from '@mui/icons-material/Directions';
-import { CollectionsBookmarkRounded } from '@mui/icons-material';
 
 const MapContainer = () => {
-  const [position, setPosition] = useState({ lat: 12, lng: 12 });
+  const [position, setPosition] = useState({ lat:0,lng:0});
 
   // how to define the type of markers
   const [markers, setMarkers] = useState([
@@ -77,6 +76,7 @@ console.log(newNamerating)
   // const handleSubmit = (e) => {
   //   e.preventDefault();
   // }
+  
 
   return (
     <LoadScript googleMapsApiKey='AIzaSyARf2O8_kiPOjmWzrP_ZcqAdjbaT-K4uSw' libraries={['places']}>
@@ -114,10 +114,10 @@ console.log(newNamerating)
             <IconButton type='button' sx={{ p: '10px' }} aria-label='search'>
               <SearchIcon />
             </IconButton>
-            <Divider sx={{ height: 28, m: 0.5 }} orientation='vertical' />
-            <IconButton color='primary' sx={{ p: '10px' }} aria-label='directions'>
-              <DirectionsIcon />
-            </IconButton>
+
+            <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+            <img src="/mapcat.png" style={{width: '30px', paddingBottom: '10px'}}/>
+
           </Paper>
         </StandaloneSearchBox>
         <Box sx={{ display: 'flex', marginLeft:"30px", marginTop: 5 }}>
@@ -136,6 +136,10 @@ console.log(newNamerating)
         </Box></Box>
       </Box>
     </LoadScript>
+
   );
 };
 export default MapContainer;
+
+
+

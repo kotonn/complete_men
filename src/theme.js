@@ -6,6 +6,14 @@ const theme = createTheme({
             default: '#eeeeee',
         },
     },
+    // define the default font family
+    typography: {
+        fontFamily: "Arial unicode ms",
+        fontSize: 14,
+        fontWeightLight: 300,
+        fontWeightRegular: 400,
+        fontWeightMedium: 500,
+    },
     breakpoints: {
         values: {
             xs: 0,

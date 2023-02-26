@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { CircleF, GoogleMap, InfoWindowF, LoadScript, MarkerF, StandaloneSearchBox } from '@react-google-maps/api';
-import { Box, radioClasses, DataGrid } from '@mui/material';
+import { GoogleMap, InfoWindowF, LoadScript, MarkerF, StandaloneSearchBox } from '@react-google-maps/api';
+import { Box } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
@@ -16,10 +16,10 @@ const MapContainer = () => {
   const [reconame, setReconame] = useState("")
   const [namerating, setNamerating] = useState([{ storename: '', rating: "", lat: 0, lng: 0 }]);
   const [GPT3Response, setGPT3Response] = useState('');
+  const [text, setText] = useState("");
   const chatGptApiKey = "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";
 
   const fetchGPT3 = async (text) => {
-
     const response = await fetch("https://api.openai.com/v1/engines/text-davinci-003/completions", {
       method: "POST",
       headers: {
@@ -33,7 +33,7 @@ const MapContainer = () => {
       }),
     });
     const data = await response.json();
-    alert(data.choices[0].text);
+    console.log(new Date().toDateString, data.choices[0].text);
   };
 
   // how to define the type of markers
@@ -46,7 +46,8 @@ const MapContainer = () => {
 
   const mapStyles = {
     height: '80vh',
-    width: '90%',
+    width: '60%',
+    borderRadius: "25px",
   };
 
   // get the current position of an user
@@ -79,8 +80,13 @@ const MapContainer = () => {
   const researchBoxRef = useRef();
 
   const onPlacesChanged = () => {
-    // get the places where an user searched
+    // get string put in the search box
+    const researchBox = researchBoxRef.current;
+    console.log(researchBox);
+
+
     const places = researchBoxRef.current.getPlaces();
+    console.log("hoge", researchBoxRef.current.inputField)
     if (places == undefined) {
       ;
     } else {
@@ -147,27 +153,31 @@ const MapContainer = () => {
           paddingTop: '4vh',
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', marginLeft: "15%", marginTop: "1%" }}>
           <StandaloneSearchBox
             onLoad={(ref) => (researchBoxRef.current = ref)}
             onPlacesChanged={onPlacesChanged}
             options={{ visible: false }}
           >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder='Search Google Maps'
-              inputProps={{ 'aria-label': 'search google maps' }}
-            />
-            <IconButton type='button' sx={{ p: '10px' }} aria-label='search'>
-              <SearchIcon />
-            </IconButton>
+            <Paper
+              component='text'
+              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 500, borderRadius: 5 }}
+            >
+              <InputBase
+                sx={{ flex: 1, marginLeft: 1, fontSize: 20, marginLeft: 3 }}
+                placeholder='検索'
+                inputProps={{ 'aria-label': 'search google maps' }}
+              />
+              <IconButton type='button' sx={{ p: '10px' }} aria-label='search'>
+                <SearchIcon />
+              </IconButton>
 
-            <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-            <img src="/mapcat.png" style={{ width: '30px', paddingBottom: '10px' }} />
-
-          </Paper>
-        </StandaloneSearchBox>
-        <Box sx={{ display: 'flex', marginLeft: "30px", marginTop: 5 }}>
+              <Divider sx={{ height: 28, marginRight: 1.5 }} orientation="vertical" />
+              <img src="/mapcat.png" style={{ width: '30px', paddingBottom: '15px', marginRight: 7 }} onClick={() => { fetchGPT3(`${researchBoxRef.current}の後によく行く場所の名前を5つjson形式で教えてください`) }} />
+            </Paper>
+          </StandaloneSearchBox>
+        </Box>
+        <Box sx={{ display: 'flex', marginLeft: "5%", marginTop: 6 }}>
           <GoogleMap directionService mapContainerStyle={mapStyles} zoom={15} center={position}>
             {/* set the first marker on the position where an user is. */}
             <MarkerF position={position} icon={"https://maps.google.com/mapfiles/kml/paddle/blu-blank.png"} />
@@ -182,20 +192,31 @@ const MapContainer = () => {
               </div>
             </InfoWindowF>
           </GoogleMap>
-          <Box>
-            <h1 >おすすめのスポット</h1>
-            <Box fontSize={20} fontWeight={400} color={"pink"} ml={4} sx={{ height: '20%' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', marginLeft: 15, marginTop: -5 }}>
+            <Box sx={{ marginTop: -5 }}>
+              <h1 style={{ color: "#98514B" }}>おすすめのスポット</h1>
+            </Box>
+            <Box fontSize={20} fontWeight={400} color={"#98514B"} sx={{ height: '20%' }}>
               {namerating.filter((v, index) => index < 10).map((rating, idx) => (
-                <Box bgcolor={"white"} mb={1} borderRadius={2} boxShadow={2} p={1}>
-                  <div sx={{ flexDirection: "column", }} onMouseEnter={() => {
+                <Box key={idx} bgcolor={"white"} minWidth={300} mb={2} borderRadius={2} boxShadow={2} p={1.5} marginTop={2} marginRight={15}>
+                  <div sx={{ flexDirection: "column" }} onMouseEnter={() => {
                     let ratingcenter = { lat: rating.lat, lng: rating.lng }
                     console.log(ratingcenter);
                     setRecocenter({ lat: ratingcenter.lat, lng: ratingcenter.lng })
                     setReconame(rating.storename)
                   }} >
-                    {rating.storename}　　　評価： {rating.rating}
-                  </div></Box>))}</Box>
-
+                    <div style={{ display: "flex", flexDirection: "row" }}>
+                      <div style={{ marginRight: 50, display: "flex", flexDirection: "row" }} >
+                        ☆ {rating.rating}
+                      </div>
+                      <div>
+                        {rating.storename}
+                      </div>
+                    </div>
+                  </div>
+                </Box>
+              ))}
+            </Box>
           </Box></Box>
       </Box>
     </LoadScript >

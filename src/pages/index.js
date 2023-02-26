@@ -7,6 +7,7 @@ import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import Swal from 'sweetalert2'
 
 const MapContainer = () => {
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
@@ -15,9 +16,8 @@ const MapContainer = () => {
   const [recocenter, setRecocenter] = useState({ lat: 0, lng: 0, name: "" });
   const [reconame, setReconame] = useState("")
   const [namerating, setNamerating] = useState([{ storename: '', rating: "", lat: 0, lng: 0 }]);
-  const [GPT3Response, setGPT3Response] = useState('');
-  const [text, setText] = useState("");
-  const chatGptApiKey = "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";
+  const [nameText, setNameText] = useState("");
+  const chatGptApiKey = "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";
 
   const fetchGPT3 = async (text) => {
     const response = await fetch("https://api.openai.com/v1/engines/text-davinci-003/completions", {
@@ -32,8 +32,12 @@ const MapContainer = () => {
         max_tokens: 4000,
       }),
     });
+
     const data = await response.json();
-    console.log(new Date().toDateString, data.choices[0].text);
+
+    console.log(data.choices[0].text);
+    // alert(data.choices[0].text);
+    Swal.fire(data.choices[0].text);
   };
 
   // how to define the type of markers
@@ -80,13 +84,8 @@ const MapContainer = () => {
   const researchBoxRef = useRef();
 
   const onPlacesChanged = () => {
-    // get string put in the search box
-    const researchBox = researchBoxRef.current;
-    console.log(researchBox);
-
 
     const places = researchBoxRef.current.getPlaces();
-    console.log("hoge", researchBoxRef.current.inputField)
     if (places == undefined) {
       ;
     } else {
@@ -167,13 +166,16 @@ const MapContainer = () => {
                 sx={{ flex: 1, marginLeft: 1, fontSize: 20, marginLeft: 3 }}
                 placeholder='検索'
                 inputProps={{ 'aria-label': 'search google maps' }}
+                onChange={(e) => {
+                  setNameText(e.target.value);
+                }}
               />
               <IconButton type='button' sx={{ p: '10px' }} aria-label='search'>
                 <SearchIcon />
               </IconButton>
 
               <Divider sx={{ height: 28, marginRight: 1.5 }} orientation="vertical" />
-              <img src="/mapcat.png" style={{ width: '30px', paddingBottom: '15px', marginRight: 7 }} onClick={() => { fetchGPT3(`${researchBoxRef.current}の後によく行く場所の名前を5つjson形式で教えてください`) }} />
+              <img src="/mapcat.png" style={{ width: '30px', paddingBottom: '15px', marginRight: 7 }} onClick={() => { fetchGPT3(`${nameText}の後によく行く場所の名前を5つ教えてください`) }} />
             </Paper>
           </StandaloneSearchBox>
         </Box>

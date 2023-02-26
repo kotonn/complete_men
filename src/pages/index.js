@@ -7,7 +7,7 @@ import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 const MapContainer = () => {
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
@@ -17,7 +17,7 @@ const MapContainer = () => {
   const [reconame, setReconame] = useState("")
   const [namerating, setNamerating] = useState([{ storename: '', rating: "", lat: 0, lng: 0 }]);
   const [nameText, setNameText] = useState("");
-  const chatGptApiKey = "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";
+  const chatGptApiKey = process.env.NEXT_PUBLIC_CHAT_GPT_API_KEY;
 
   const fetchGPT3 = async (text) => {
     const response = await fetch("https://api.openai.com/v1/engines/text-davinci-003/completions", {

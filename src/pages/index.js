@@ -17,7 +17,7 @@ const MapContainer = () => {
   const [reconame, setReconame] = useState("")
   const [namerating, setNamerating] = useState([{ storename: '', rating: "", lat: 0, lng: 0 }]);
   const [nameText, setNameText] = useState("");
-  const chatGptApiKey = "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";
+  const chatGptApiKey = "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";
 
   const fetchGPT3 = async (text) => {
     const response = await fetch("https://api.openai.com/v1/engines/text-davinci-003/completions", {
@@ -31,13 +31,15 @@ const MapContainer = () => {
         n: 1,
         max_tokens: 4000,
       }),
+    }).then((res) => res.json()).then((data) => {
+      console.log(data);
+
+      console.log(data.choices[0].text);
+      // alert(data.choices[0].text);
+      Swal.fire(data.choices[0].text);
     });
 
-    const data = await response.json();
 
-    console.log(data.choices[0].text);
-    // alert(data.choices[0].text);
-    Swal.fire(data.choices[0].text);
   };
 
   // how to define the type of markers
